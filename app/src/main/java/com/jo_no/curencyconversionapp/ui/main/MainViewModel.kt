@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import java.math.BigDecimal
 
 class MainViewModel(
     private val repo: MainRepo = MainRepoImpl()
@@ -16,17 +17,9 @@ class MainViewModel(
 
     private val disposable = CompositeDisposable()
 
-    private val _eurRate = MutableLiveData<CurrencyRate>()
-    val eurRate: LiveData<CurrencyRate> = _eurRate
+    private val _currencies = MutableLiveData<ArrayList<CurrencyRate>>()
+    val currencies: LiveData<ArrayList<CurrencyRate>> = _currencies
 
-    private val _cadRate = MutableLiveData<CurrencyRate>()
-    val cadRate: LiveData<CurrencyRate> = _cadRate
-
-    private val _sekRate = MutableLiveData<CurrencyRate>()
-    val sekRate: LiveData<CurrencyRate> = _sekRate
-
-    private val _usdRate = MutableLiveData<CurrencyRate>()
-    val usdRate: LiveData<CurrencyRate> = _usdRate
 
     fun getCurrencyRates() {
         disposable.add(
@@ -34,11 +27,10 @@ class MainViewModel(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { response ->
-                        _eurRate.value = CurrencyRate("EUR", response.rates.eur)
-                        _usdRate.value = CurrencyRate("USD", response.rates.usd)
-                        _sekRate.value = CurrencyRate("SEK", response.rates.sek)
-                        _cadRate.value = CurrencyRate("CAD", response.rates.cad)
+                    { res ->
+                        _currencies.value = res.rates.map {
+                            CurrencyRate(it.key, it.value.toFloat())
+                        } as ArrayList<CurrencyRate>
                         Log.d(logTag, "OnNext!")
                     },
                     {

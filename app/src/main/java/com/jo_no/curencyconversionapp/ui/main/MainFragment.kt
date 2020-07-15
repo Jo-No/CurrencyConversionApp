@@ -5,15 +5,18 @@ import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.R
 
 class MainFragment : Fragment() {
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var adapter: CurrencyAdapter
 
     companion object {
         fun newInstance() = MainFragment()
@@ -26,14 +29,15 @@ class MainFragment : Fragment() {
     ): View =
         inflater.inflate(R.layout.main_fragment, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+
+        recyclerView = view.findViewById(R.id.currency_list_recycler)
         viewModel.getCurrencyRates()
+
+        adapter = CurrencyAdapter()
+        recyclerView.adapter = adapter
 
         val handler = Handler()
         val delay = 1000L
@@ -46,11 +50,11 @@ class MainFragment : Fragment() {
             }
         }, delay)
 
-        viewModel.eurRate.observe(this) {
-            Toast.makeText(context, "${it.currency}, $count", Toast.LENGTH_SHORT).show()
+        viewModel.currencies.observe(this) {
+            adapter.listItems = it
+            adapter.notifyDataSetChanged()
         }
     }
-
 }
 
 fun <T> LiveData<T>.observe(lifecycleOwner: LifecycleOwner, onEmitted: (T) -> Unit) {
