@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="emoji_size">28sp</dimen>
+    <dimen name="currency_title_size">16sp</dimen>
+    <dimen name="currency_value_size">20sp</dimen>
+</resources>

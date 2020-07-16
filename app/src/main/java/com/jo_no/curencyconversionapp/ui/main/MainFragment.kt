@@ -10,7 +10,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.R
 
@@ -22,6 +21,16 @@ class MainFragment : Fragment() {
 
     val handler = Handler()
     var keepChecking = true
+
+    val delay = 1000L
+    val runnable = object : Runnable {
+        override fun run() {
+            if (keepChecking) {
+                viewModel.getCurrencyRates()
+                handler.postDelayed(this, delay)
+            }
+        }
+    }
 
     companion object {
         fun newInstance() = MainFragment()
@@ -43,32 +52,24 @@ class MainFragment : Fragment() {
 
         adapter = CurrencyAdapter()
         adapter.stopCheckingCallback = ::stopChecking
-//        val callback: ItemTouchHelper.Callback = ItemTouchCallback(adapter)
-//        val touchHelper = ItemTouchHelper(callback)
-//        touchHelper.attachToRecyclerView(recyclerView)
         recyclerView.adapter = adapter
 
-//        startChecking()
+        startChecking()
 
         viewModel.currencies.observe(this) {
-            adapter.listItems = it
-            adapter.notifyDataSetChanged()
+            if (keepChecking) {
+                adapter.listItems = it
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 
     private fun startChecking() {
-        val delay = 1000L
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                if (keepChecking) {
-                    viewModel.getCurrencyRates()
-                    handler.postDelayed(this, delay)
-                }
-            }
-        }, delay)
+        handler.postDelayed(runnable, delay)
     }
 
     private fun stopChecking() {
+        handler.removeCallbacks(runnable)
         keepChecking = false
     }
 }
