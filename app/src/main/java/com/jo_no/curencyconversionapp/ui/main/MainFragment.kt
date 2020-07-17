@@ -3,7 +3,6 @@ package com.jo_no.curencyconversionapp.ui.main
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.R
-
+import com.jo_no.curencyconversionapp.models.CurrencyRate
 
 class MainFragment : Fragment(), ClickInterface {
 
@@ -26,7 +26,7 @@ class MainFragment : Fragment(), ClickInterface {
     var keepChecking = true
 
     val delay = 1000L
-    val runnable = object : Runnable {
+    private val runnable = object : Runnable {
         override fun run() {
             if (keepChecking) {
                 viewModel.getCurrencyRates()
@@ -34,6 +34,7 @@ class MainFragment : Fragment(), ClickInterface {
             }
         }
     }
+    lateinit var imm: InputMethodManager
 
     companion object {
         fun newInstance() = MainFragment()
@@ -50,6 +51,8 @@ class MainFragment : Fragment(), ClickInterface {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
+        imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
         recyclerView = view.findViewById(R.id.currency_list_recycler)
         viewModel.getCurrencyRates()
 
@@ -57,37 +60,29 @@ class MainFragment : Fragment(), ClickInterface {
         recyclerView.adapter = adapter
 
         startChecking()
+    }
 
+    override fun startChecking() {
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+        keepChecking = true
         viewModel.currencies.observe(this) {
             if (keepChecking) {
                 adapter.listItems = it
                 adapter.notifyDataSetChanged()
             }
         }
-
-        setKeyboardManager()
-    }
-
-    private fun setKeyboardManager() {
-        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        if (!imm.isAcceptingText && !viewModel.currencies.hasActiveObservers()){
-            keepChecking = true
-            viewModel.currencies.observe(this) {
-                if (keepChecking) {
-                    adapter.listItems = it
-                    adapter.notifyDataSetChanged()
-                }
-            }
-            startChecking()
-        }
-    }
-
-    override fun startChecking() {
         handler.postDelayed(runnable, delay)
     }
 
     override fun stopChecking() {
         keepChecking = false
+    }
+
+    override fun makeConversion(item: CurrencyRate, value: String, listItems: ArrayList<CurrencyRate>) {
+//        val helper = ConversionHelper()
+//        val convertedList = helper.convert(item, value, listItems)
+//        adapter.listItems = convertedList
+//        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {

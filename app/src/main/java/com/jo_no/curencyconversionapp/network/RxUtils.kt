@@ -1,6 +1,5 @@
-package com.jo_no.curencyconversionapp
+package com.jo_no.curencyconversionapp.network
 
-import android.util.Log
 import io.reactivex.Flowable
 import retrofit2.adapter.rxjava2.Result
 

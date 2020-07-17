@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.jo_no.curencyconversionapp.models.CurrencyRate
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -28,7 +29,10 @@ class MainViewModel(
                 .subscribe(
                     { res ->
                         _currencies.value = res.rates.map {
-                            CurrencyRate(it.key, it.value.toFloat())
+                            CurrencyRate(
+                                it.key,
+                                it.value.toFloat()
+                            )
                         } as ArrayList<CurrencyRate>
                         Log.d(logTag, "OnNext!")
                     },

@@ -1,4 +1,4 @@
-package com.jo_no.curencyconversionapp
+package com.jo_no.curencyconversionapp.network
 
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit

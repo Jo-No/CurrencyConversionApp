@@ -1,9 +1,9 @@
 package com.jo_no.curencyconversionapp.ui.main
 
-import com.jo_no.curencyconversionapp.CurrencyResponse
-import com.jo_no.curencyconversionapp.Network
-import com.jo_no.curencyconversionapp.RxUtils
-import com.jo_no.curencyconversionapp.Service
+import com.jo_no.curencyconversionapp.models.CurrencyResponse
+import com.jo_no.curencyconversionapp.network.Network
+import com.jo_no.curencyconversionapp.network.RxUtils
+import com.jo_no.curencyconversionapp.network.Service
 import io.reactivex.Flowable
 
 interface MainRepo {
@@ -11,7 +11,8 @@ interface MainRepo {
 }
 
 class MainRepoImpl(
-    private val service: Service = Network.createService(Service::class.java)
+    private val service: Service = Network.createService(
+        Service::class.java)
 ): MainRepo {
     override fun getCurrencyRates(): Flowable<CurrencyResponse> {
         return RxUtils.networkTask(service.getCurrencies("EUR"))

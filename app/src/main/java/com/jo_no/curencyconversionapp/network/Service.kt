@@ -1,5 +1,6 @@
-package com.jo_no.curencyconversionapp
+package com.jo_no.curencyconversionapp.network
 
+import com.jo_no.curencyconversionapp.models.CurrencyResponse
 import io.reactivex.Flowable
 import retrofit2.http.GET
 import retrofit2.http.Query

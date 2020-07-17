@@ -1,4 +1,4 @@
-package com.jo_no.curencyconversionapp.ui.main
+package com.jo_no.curencyconversionapp.models
 
 data class CurrencyRate(
     val currency: String,

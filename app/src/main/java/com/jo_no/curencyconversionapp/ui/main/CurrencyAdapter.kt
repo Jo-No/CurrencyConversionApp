@@ -1,19 +1,21 @@
 package com.jo_no.curencyconversionapp.ui.main
 
-import android.R.attr.data
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.TextView.OnEditorActionListener
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.R
+import com.jo_no.curencyconversionapp.models.CurrencyRate
 import java.util.*
-import kotlin.collections.ArrayList
 
 
-class CurrencyAdapter(val clickInterface: ClickInterface) : RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
+class CurrencyAdapter(val clickInterface: ClickInterface) :
+    RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
 
     var listItems: ArrayList<CurrencyRate> = arrayListOf()
 
@@ -29,7 +31,7 @@ class CurrencyAdapter(val clickInterface: ClickInterface) : RecyclerView.Adapter
         holder.bind(listItems[position])
     }
 
-    inner class CurrencyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class CurrencyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val flag = view.findViewById<TextView>(R.id.flag)
         private val shortTitle = view.findViewById<TextView>(R.id.currency_short_title)
         private val longTitle = view.findViewById<TextView>(R.id.currency_long_title)
@@ -43,22 +45,26 @@ class CurrencyAdapter(val clickInterface: ClickInterface) : RecyclerView.Adapter
             flag.text = getFlagImage(item.currency)
 
             currencyValue.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus && adapterPosition>0) {
+                if (hasFocus && adapterPosition > 0) {
                     clickInterface.stopChecking()
                     moveToTop(adapterPosition)
                 }
-            }
-
-            currencyValue.setOnEditorActionListener { v, actionId, event ->
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    clickInterface.startChecking()
+                if (hasFocus && adapterPosition == 0) {
+                    val list = listItems
+//                    list.drop(adapterPosition)
+                    clickInterface.makeConversion(item, currencyValue.text.toString(), list)
                 }
-                true
+                (v as EditText).setOnEditorActionListener { _, actionId, _ ->
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        clickInterface.startChecking()
+                    }
+                    false
+                }
             }
         }
     }
 
-    fun moveToTop(startPosition: Int){
+    fun moveToTop(startPosition: Int) {
         if (startPosition != 0) {
             for (i in startPosition downTo 1) {
                 Collections.swap(listItems, i, i - 1)
