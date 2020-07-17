@@ -31,7 +31,7 @@ class MainViewModel(
                         _currencies.value = res.rates.map {
                             CurrencyRate(
                                 it.key,
-                                it.value.toFloat()
+                                it.value.toDouble()
                             )
                         } as ArrayList<CurrencyRate>
                         Log.d(logTag, "OnNext!")

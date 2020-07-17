@@ -49,11 +49,10 @@ class CurrencyAdapter(val clickInterface: ClickInterface) :
                     clickInterface.stopChecking()
                     moveToTop(adapterPosition)
                 }
-                if (hasFocus && adapterPosition == 0) {
-                    val list = listItems
-//                    list.drop(adapterPosition)
-                    clickInterface.makeConversion(item, currencyValue.text.toString(), list)
-                }
+//                if (hasFocus && adapterPosition == 0) {
+//                    val list = listItems
+//                    clickInterface.makeConversion(item, currencyValue.text.toString(), list)
+//                }
                 (v as EditText).setOnEditorActionListener { _, actionId, _ ->
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         clickInterface.startChecking()

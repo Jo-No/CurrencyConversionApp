@@ -17,6 +17,8 @@ import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.R
 import com.jo_no.curencyconversionapp.models.CurrencyRate
 
+// TODO: tests
+// TODO Dagger
 class MainFragment : Fragment(), ClickInterface {
 
     private lateinit var recyclerView: RecyclerView
@@ -79,10 +81,11 @@ class MainFragment : Fragment(), ClickInterface {
     }
 
     override fun makeConversion(item: CurrencyRate, value: String, listItems: ArrayList<CurrencyRate>) {
-//        val helper = ConversionHelper()
-//        val convertedList = helper.convert(item, value, listItems)
-//        adapter.listItems = convertedList
-//        adapter.notifyDataSetChanged()
+        // TODO: inject helper and use without freezing
+        val helper = ConversionHelper()
+        val convertedList = helper.convert(item, value, listItems)
+        adapter.listItems = convertedList
+        adapter.notifyDataSetChanged()
     }
 
     override fun onDestroy() {
