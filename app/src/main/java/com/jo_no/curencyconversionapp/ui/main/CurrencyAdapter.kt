@@ -13,11 +13,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
+class CurrencyAdapter(val clickInterface: ClickInterface) : RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
 
     var listItems: ArrayList<CurrencyRate> = arrayListOf()
-    lateinit var stopCheckingCallback: () -> Unit
-    lateinit var startCheckingCallback: () -> Unit
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CurrencyViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -28,7 +26,7 @@ class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>
     override fun getItemCount(): Int = listItems.size
 
     override fun onBindViewHolder(holder: CurrencyViewHolder, position: Int) {
-        holder.bind(listItems[position], position)
+        holder.bind(listItems[position])
     }
 
     inner class CurrencyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -37,24 +35,23 @@ class CurrencyAdapter : RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>
         private val longTitle = view.findViewById<TextView>(R.id.currency_long_title)
         private val currencyValue = view.findViewById<EditText>(R.id.currency_edit)
 
-        fun bind(item: CurrencyRate, position: Int) {
+        fun bind(item: CurrencyRate) {
             shortTitle.text = item.currency
             longTitle.text = getLongTitle(item.currency)
             currencyValue.text.clear()
             currencyValue.text.insert(0, item.rate.toString())
             flag.text = getFlagImage(item.currency)
 
-            currencyValue.setOnClickListener {
-                stopCheckingCallback.invoke()
-            }
             currencyValue.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus) {
+                if (hasFocus && adapterPosition>0) {
+                    clickInterface.stopChecking()
                     moveToTop(adapterPosition)
                 }
             }
+
             currencyValue.setOnEditorActionListener { v, actionId, event ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    startCheckingCallback.invoke()
+                    clickInterface.startChecking()
                 }
                 true
             }

@@ -7,7 +7,6 @@ import androidx.lifecycle.ViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import java.math.BigDecimal
 
 class MainViewModel(
     private val repo: MainRepo = MainRepoImpl()
@@ -40,5 +39,9 @@ class MainViewModel(
                         Log.d(logTag, "Complete!")
                     })
         )
+    }
+
+    fun dispose() {
+        disposable.dispose()
     }
 }

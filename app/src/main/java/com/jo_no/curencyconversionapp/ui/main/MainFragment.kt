@@ -1,10 +1,13 @@
 package com.jo_no.curencyconversionapp.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -14,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.R
 
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), ClickInterface {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CurrencyAdapter
@@ -50,8 +53,7 @@ class MainFragment : Fragment() {
         recyclerView = view.findViewById(R.id.currency_list_recycler)
         viewModel.getCurrencyRates()
 
-        adapter = CurrencyAdapter()
-        adapter.stopCheckingCallback = ::stopChecking
+        adapter = CurrencyAdapter(this)
         recyclerView.adapter = adapter
 
         startChecking()
@@ -62,15 +64,36 @@ class MainFragment : Fragment() {
                 adapter.notifyDataSetChanged()
             }
         }
+
+        setKeyboardManager()
     }
 
-    private fun startChecking() {
+    private fun setKeyboardManager() {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        if (!imm.isAcceptingText && !viewModel.currencies.hasActiveObservers()){
+            keepChecking = true
+            viewModel.currencies.observe(this) {
+                if (keepChecking) {
+                    adapter.listItems = it
+                    adapter.notifyDataSetChanged()
+                }
+            }
+            startChecking()
+        }
+    }
+
+    override fun startChecking() {
         handler.postDelayed(runnable, delay)
     }
 
-    private fun stopChecking() {
-        handler.removeCallbacks(runnable)
+    override fun stopChecking() {
         keepChecking = false
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.currencies.removeObservers(this)
+        viewModel.dispose()
     }
 }
 
