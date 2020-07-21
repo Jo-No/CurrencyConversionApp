@@ -15,9 +15,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.R
+import com.jo_no.curencyconversionapp.di.DaggerAppComponent
 import com.jo_no.curencyconversionapp.models.CurrencyRate
+import javax.inject.Inject
 
 // TODO Dagger
+// TODO Navigation
 class MainFragment : Fragment(), ClickInterface {
 
     private lateinit var recyclerView: RecyclerView
@@ -41,7 +44,8 @@ class MainFragment : Fragment(), ClickInterface {
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var viewModel: MainViewModel
+    @Inject
+    lateinit var viewModel: MainViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -50,7 +54,8 @@ class MainFragment : Fragment(), ClickInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        val component = DaggerAppComponent.builder().build()
+        component.injectIntoFragment(this)
 
         imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
