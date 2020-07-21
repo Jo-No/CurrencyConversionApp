@@ -34,13 +34,12 @@ class MainViewModel(
                                 it.value.toDouble()
                             )
                         } as ArrayList<CurrencyRate>
-                        Log.d(logTag, "OnNext!")
                     },
                     {
                         Log.e(logTag, it.localizedMessage)
                     },
                     {
-                        Log.d(logTag, "Complete!")
+                        _currencies.value?.add(0, CurrencyRate("EUR", 1.0))
                     })
         )
     }

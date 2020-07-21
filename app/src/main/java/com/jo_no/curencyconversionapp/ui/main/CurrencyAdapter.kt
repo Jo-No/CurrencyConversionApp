@@ -120,6 +120,7 @@ class CurrencyAdapter(val clickInterface: ClickInterface) :
             "CNY" -> "Chinese Yuan"
             "CZK" -> "Czech Koruna"
             "DKK" -> "Danish Krone"
+            "EUR" -> "Euro"
             "GBP" -> "British Pound"
             "HKD" -> "Hong Kong Dollar"
             "HRK" -> "Croatian Kuna"
