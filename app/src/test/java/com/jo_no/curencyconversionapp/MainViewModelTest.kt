@@ -23,7 +23,7 @@ class MainViewModelTest {
     @InjectMocks
     private lateinit var viewModelUnderTest: MainViewModel
 
-    private var mockRepo = Mockito.mock(MainRepo::class.java)
+    private val mockRepo = Mockito.mock(MainRepo::class.java)
 
     @get:Rule
     val mockitoRule: MockitoRule = MockitoJUnit.rule()

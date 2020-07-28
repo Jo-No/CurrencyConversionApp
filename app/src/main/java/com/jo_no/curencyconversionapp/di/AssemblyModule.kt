@@ -15,7 +15,7 @@ class AssemblyModule {
     @Provides
     @Singleton
     fun provideViewModel(): MainViewModel {
-        return MainViewModel(provideRepo(), provideConversionHelper())
+        return MainViewModel(provideRepo())
     }
 
     @Provides
