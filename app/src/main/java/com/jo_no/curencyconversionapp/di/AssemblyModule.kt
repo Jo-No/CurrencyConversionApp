@@ -1,6 +1,6 @@
 package com.jo_no.curencyconversionapp.di
 
-import androidx.lifecycle.ViewModelProvider
+import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.network.Network
 import com.jo_no.curencyconversionapp.network.Service
 import com.jo_no.curencyconversionapp.ui.main.MainRepo
@@ -15,8 +15,7 @@ class AssemblyModule {
     @Provides
     @Singleton
     fun provideViewModel(): MainViewModel {
-        val repo: MainRepo = provideRepo()
-        return MainViewModel(provideRepo())
+        return MainViewModel(provideRepo(), provideConversionHelper())
     }
 
     @Provides
@@ -29,5 +28,11 @@ class AssemblyModule {
     @Singleton
     fun provideService(): Service {
         return Network.createService(Service::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideConversionHelper(): ConversionHelper {
+        return ConversionHelper()
     }
 }

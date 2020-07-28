@@ -1,18 +1,18 @@
 package com.jo_no.curencyconversionapp.ui.main
 
-import android.view.KeyEvent
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.TextView.OnEditorActionListener
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.R
 import com.jo_no.curencyconversionapp.models.CurrencyRate
+import com.jo_no.curencyconversionapp.toThreeDecimalPlaces
 import java.util.*
-
 
 class CurrencyAdapter(val clickInterface: ClickInterface) :
     RecyclerView.Adapter<CurrencyAdapter.CurrencyViewHolder>() {
@@ -40,25 +40,33 @@ class CurrencyAdapter(val clickInterface: ClickInterface) :
         fun bind(item: CurrencyRate) {
             shortTitle.text = item.currency
             longTitle.text = getLongTitle(item.currency)
-            currencyValue.text.clear()
-            currencyValue.text.insert(0, item.rate.toString())
+            currencyValue.text = Editable.Factory.getInstance().newEditable(item.rate.toThreeDecimalPlaces().toString())
             flag.text = getFlagImage(item.currency)
 
             currencyValue.setOnFocusChangeListener { v, hasFocus ->
-                if (hasFocus && adapterPosition > 0) {
+                if (hasFocus) {
                     clickInterface.stopChecking()
+                    v.performClick()
+                }
+            }
+            currencyValue.setOnClickListener {
+                if (adapterPosition>0) {
                     moveToTop(adapterPosition)
                 }
-//                if (hasFocus && adapterPosition == 0) {
-//                    val list = listItems
-//                    clickInterface.makeConversion(item, currencyValue.text.toString(), list)
-//                }
-                (v as EditText).setOnEditorActionListener { _, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        clickInterface.startChecking()
+            }
+            if (currencyValue.text.isNotEmpty()) {
+                (currencyValue as EditText).addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+                    override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+                    override fun afterTextChanged(s: Editable) {
+                        if (s.isNotEmpty()) {
+                            clickInterface.makeConversion(item, s.toString(), listItems)
+                        Log.d("JOSEPHINE", "🦄 converting...")
+                        }
                     }
-                    false
-                }
+                })
             }
         }
     }

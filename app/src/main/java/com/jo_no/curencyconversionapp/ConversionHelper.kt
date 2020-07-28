@@ -1,17 +1,32 @@
 package com.jo_no.curencyconversionapp
 
+import android.util.Log
 import com.jo_no.curencyconversionapp.models.CurrencyRate
 
-class ConversionHelper {
+class ConversionHelper(private val listOfPausedRates: ArrayList<CurrencyRate> = arrayListOf()) {
 
-    fun convert(baseCurrencyStart: CurrencyRate, baseCurrencyEdited: String, currencyList: ArrayList<CurrencyRate>): ArrayList<CurrencyRate> {
-        val conversion = baseCurrencyStart.rate/baseCurrencyEdited.toDouble()
-        val convertedList = arrayListOf<CurrencyRate>()
-        for (i in currencyList) {
-            if (i.currency!=baseCurrencyStart.currency) {
-                convertedList.add(CurrencyRate(i.currency, i.rate/conversion))
+    fun convert(baseCurrency: CurrencyRate, valueEntered: String, currencyList: ArrayList<CurrencyRate>): ArrayList<CurrencyRate> {
+        Log.d("JOSEPHINE", "🎾️")
+
+        val savedCurrencyRate = listOfPausedRates.find {
+            it.currency == baseCurrency.currency
+        }
+
+        val conversionFactor = valueEntered.toDouble()/savedCurrencyRate!!.rate
+
+        val x = currencyList.map {
+            if (it.currency!=baseCurrency.currency) {
+                val y = listOfPausedRates.find { fromPaused ->
+                    it.currency == fromPaused.currency
+                }
+                y?.let {
+                    CurrencyRate(it.currency, y.rate * conversionFactor)
+                }
+            } else {
+                it
             }
         }
-        return currencyList
+
+        return x as ArrayList<CurrencyRate>
     }
 }

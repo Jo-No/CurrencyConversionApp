@@ -3,6 +3,7 @@ package com.jo_no.curencyconversionapp.ui.main
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.R
@@ -19,12 +19,14 @@ import com.jo_no.curencyconversionapp.di.DaggerAppComponent
 import com.jo_no.curencyconversionapp.models.CurrencyRate
 import javax.inject.Inject
 
-// TODO Dagger
 // TODO Navigation
 class MainFragment : Fragment(), ClickInterface {
+    val logTag = this.javaClass.simpleName
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: CurrencyAdapter
+
+    private var newValue: String = "1.0"
 
     val handler = Handler()
     var keepChecking = true
@@ -47,6 +49,8 @@ class MainFragment : Fragment(), ClickInterface {
     @Inject
     lateinit var viewModel: MainViewModel
 
+    lateinit var helper: ConversionHelper
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View =
@@ -60,6 +64,7 @@ class MainFragment : Fragment(), ClickInterface {
         imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         recyclerView = view.findViewById(R.id.currency_list_recycler)
+        recyclerView.performClick()
         viewModel.getCurrencyRates()
 
         adapter = CurrencyAdapter(this)
@@ -82,6 +87,7 @@ class MainFragment : Fragment(), ClickInterface {
 
     override fun stopChecking() {
         keepChecking = false
+        helper = ConversionHelper(viewModel.currencies.value?: arrayListOf())
     }
 
     override fun makeConversion(
@@ -89,11 +95,15 @@ class MainFragment : Fragment(), ClickInterface {
         value: String,
         listItems: ArrayList<CurrencyRate>
     ) {
-        // TODO: inject helper and use without freezing
-        val helper = ConversionHelper()
-        val convertedList = helper.convert(item, value, listItems)
-        adapter.listItems = convertedList
-        adapter.notifyDataSetChanged()
+        if (imm.isAcceptingText && !keepChecking) {
+            val convertedList = helper.convert(item, value, listItems)
+            try {
+                adapter.listItems = convertedList
+                adapter.notifyItemRangeChanged(1, listItems.size)
+            } catch (e: Exception) {
+                Log.e(logTag, e.localizedMessage ?: "Error updating recyclerview")
+            }
+        }
     }
 
     override fun onDestroy() {
