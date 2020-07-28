@@ -61,9 +61,8 @@ class CurrencyAdapter(val clickInterface: ClickInterface) :
                     override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
                     override fun afterTextChanged(s: Editable) {
-                        if (s.isNotEmpty()) {
+                        if (s.isNotEmpty() && adapterPosition == 0) {
                             clickInterface.makeConversion(item, s.toString(), listItems)
-                        Log.d("JOSEPHINE", "🦄 converting...")
                         }
                     }
                 })

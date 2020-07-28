@@ -20,7 +20,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MainUITest {
 
-    private val mockList = arrayListOf<CurrencyRate>(
+    private val mockList = arrayListOf(
         CurrencyRate("GBP", 1.4),
         CurrencyRate("USD", 1.9),
         CurrencyRate("SEK", 5.2),
@@ -33,12 +33,6 @@ class MainUITest {
     @Before
     fun setUp() {
         activityRule.launchActivity(Intent())
-    }
-
-    @Test
-    fun useAppContext() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("com.jo_no.currencyconversionapp", appContext.packageName)
     }
 
     @Test

@@ -9,17 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.jo_no.curencyconversionapp.ConversionHelper
 import com.jo_no.curencyconversionapp.R
 import com.jo_no.curencyconversionapp.di.DaggerAppComponent
 import com.jo_no.curencyconversionapp.models.CurrencyRate
+import com.jo_no.curencyconversionapp.observe
 import javax.inject.Inject
 
-// TODO Navigation
 class MainFragment : Fragment(), ClickInterface {
     val logTag = this.javaClass.simpleName
 
@@ -49,7 +46,7 @@ class MainFragment : Fragment(), ClickInterface {
     @Inject
     lateinit var viewModel: MainViewModel
 
-    lateinit var helper: ConversionHelper
+    private lateinit var helper: ConversionHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -64,7 +61,6 @@ class MainFragment : Fragment(), ClickInterface {
         imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
         recyclerView = view.findViewById(R.id.currency_list_recycler)
-        recyclerView.performClick()
         viewModel.getCurrencyRates()
 
         adapter = CurrencyAdapter(this)
@@ -111,10 +107,4 @@ class MainFragment : Fragment(), ClickInterface {
         viewModel.currencies.removeObservers(this)
         viewModel.dispose()
     }
-}
-
-fun <T> LiveData<T>.observe(lifecycleOwner: LifecycleOwner, onEmitted: (T) -> Unit) {
-    observe(lifecycleOwner, Observer<T> {
-        onEmitted(it)
-    })
 }

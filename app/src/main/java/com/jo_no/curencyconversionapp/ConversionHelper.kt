@@ -11,18 +11,18 @@ class ConversionHelper(private val listOfPausedRates: ArrayList<CurrencyRate> = 
 
         val conversionFactor = valueEntered.toDouble()/savedCurrencyRate!!.rate
 
-        val x = currencyList.map {
-            if (it.currency!=baseCurrency.currency) {
-                val y = listOfPausedRates.find { fromPaused ->
-                    it.currency == fromPaused.currency
+        val newList = currencyList.map { currencyRate ->
+            if (currencyRate.currency!=baseCurrency.currency) {
+                val item = listOfPausedRates.find { fromPaused ->
+                    currencyRate.currency == fromPaused.currency
                 }
-                y?.let {
-                    CurrencyRate(it.currency, y.rate * conversionFactor)
+                item?.let {
+                    CurrencyRate(it.currency, item.rate * conversionFactor)
                 }
             } else {
-                it
+                currencyRate
             }
         }
-        return x as ArrayList<CurrencyRate>
+        return newList as ArrayList<CurrencyRate>
     }
 }

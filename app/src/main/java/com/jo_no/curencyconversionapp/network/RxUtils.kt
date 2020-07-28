@@ -15,8 +15,5 @@ object RxUtils {
 
     private fun <T> emitResponse(result: Result<T>): T? {
         return result.response()?.body()
-// TODO:
-//            Log.d("Network error", "😡 response failed")
-
     }
 }

@@ -7,7 +7,6 @@ import com.jo_no.curencyconversionapp.ui.main.MainRepo
 import com.jo_no.curencyconversionapp.ui.main.MainViewModel
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Flowable
-import junit.framework.Assert.assertEquals
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -63,6 +62,6 @@ class MainViewModelTest {
     fun successfulResponseUpdatesLiveData() {
         whenever(mockRepo.getCurrencyRates()).thenReturn(success)
         viewModelUnderTest.getCurrencyRates()
-        assertEquals(expectedCurrencyList, viewModelUnderTest.currencies.value)
+        assert(expectedCurrencyList == viewModelUnderTest.currencies.value)
     }
 }
